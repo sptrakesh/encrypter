@@ -57,9 +57,9 @@ Bye
 ```
 
 ## Docker
-Docker image with the service and utility is available.  Use the image to either
-encrypt/decrypt once, or run as a service that interested applications can use
-to encrypt/decrypt as required.
+Docker image with the service and utility is [available](https://hub.docker.com/repository/docker/sptrakesh/encrypter).
+Use the image to either encrypt/decrypt once, or run as a service that interested 
+applications can use to encrypt/decrypt as required.
 
 ### Running CLI
 The image can be used to encrypt or decrypt via single runs of the container
