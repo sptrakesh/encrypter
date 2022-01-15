@@ -56,6 +56,18 @@ encrypter> exit
 Bye
 ```
 
+## Build
+Standard `cmake` build system.  Main dependency is on [boost](https://boost.org/).
+
+```shell
+cd <path of project>
+mkdir build && cd build
+cmake -DCMAKE_PREFIX_PATH=/usr/local/boost \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=/usr/local/spt ..
+sudo make -j8 install
+```
+
 ## Docker
 Docker image with the service and utility is [available](https://hub.docker.com/repository/docker/sptrakesh/encrypter).
 Use the image to either encrypt/decrypt once, or run as a service that interested 

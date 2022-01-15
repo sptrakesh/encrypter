@@ -21,7 +21,7 @@ int main( int argc, char const * const * argv )
   bool help = false;
 
   auto options = clara::Help(help) |
-      Opt(console)["-c"]["--console"]("Log to console (default false)") |
+      Opt(console)["-c"]["--console"]("Log to console (default off)") |
       Opt(port, "2030")["-p"]["--port"]("Port on which to listen for tcp traffic (default 2030)") |
       Opt(threads, "8")["-n"]["--threads"]("Number of server threads to spawn (default system)") |
       Opt(level, "info")["-l"]["--log-level"]("Log level to use [debug|info|warn|critical] (default info).") |
