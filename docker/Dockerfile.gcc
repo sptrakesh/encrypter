@@ -1,0 +1,30 @@
+FROM sptrakesh/boost:gcc as base
+
+RUN apt-get install -y libreadline-dev
+
+COPY CMakeLists.txt /opt/spt/config-db/CMakeLists.txt
+COPY src /opt/spt/config-db/src
+
+WORKDIR /opt/spt/config-db/build
+RUN rm -rf * \
+  && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/local .. \
+  && make -j8 \
+  && make install
+
+FROM sptrakesh/cppruntime:gcc
+
+RUN apt-get install -y libcurl4 libreadline8 \
+  && adduser --shell /bin/sh --home /home/spt spt \
+  && mkdir -p /opt/spt/logs /opt/spt/data \
+  && chown spt:spt /opt/spt/logs /opt/spt/data
+
+COPY --from=base /opt/spt/bin /opt/spt/bin
+COPY --from=base /opt/spt/include /opt/spt/include
+COPY --from=base /opt/spt/lib /opt/spt/lib
+COPY docker/scripts/*.sh /opt/spt/bin/
+
+WORKDIR /opt/spt
+ENV LD_LIBRARY_PATH=/usr/lib \
+  PATH=$PATH:/opt/spt/bin
+USER spt
+ENTRYPOINT [ "/opt/spt/bin/entrypoint.sh" ]

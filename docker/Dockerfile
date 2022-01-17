@@ -13,6 +13,8 @@ RUN apk add --no-cache readline-dev \
 FROM sptrakesh/cppruntime
 
 COPY --from=base /opt/spt/bin /opt/spt/bin
+COPY --from=base /opt/spt/include /opt/spt/include
+COPY --from=base /opt/spt/lib /opt/spt/lib
 COPY docker/scripts/*.sh /opt/spt/bin/
 
 RUN apk add --no-cache readline \
@@ -22,6 +24,7 @@ RUN apk add --no-cache readline \
   && chown spt:spt /opt/spt/logs /opt/spt/data
 
 WORKDIR /opt/spt
-ENV LD_LIBRARY_PATH=/usr/lib
+ENV LD_LIBRARY_PATH=/usr/lib \
+  PATH=$PATH:/opt/spt/bin
 USER spt
 ENTRYPOINT [ "/opt/spt/bin/entrypoint.sh" ]

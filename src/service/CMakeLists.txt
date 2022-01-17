@@ -7,7 +7,7 @@ if (APPLE)
   )
 else()
   target_link_libraries(encrypter-service
-    PRIVATE nanolog encrypter-lib Boost::boost crypto ssl z
+    PRIVATE nanolog encrypter-lib Boost::boost crypto ssl pthread z
   )
 endif()
 

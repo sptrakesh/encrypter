@@ -8,7 +8,7 @@ if (APPLE)
   )
 else()
   target_link_libraries(encrypter
-    PRIVATE nanolog encrypter-lib ${OPENSSL_LIBRARIES} z
+    PRIVATE nanolog encrypter-lib ${OPENSSL_LIBRARIES} pthread z
   )
 endif()
 

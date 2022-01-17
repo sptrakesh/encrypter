@@ -7,7 +7,7 @@ if (APPLE)
   )
 else()
   target_link_libraries(encrypter-shell
-    PRIVATE nanolog encrypter-lib crypto ssl readline z
+    PRIVATE nanolog encrypter-lib crypto ssl readline pthread z
   )
 endif()
 
