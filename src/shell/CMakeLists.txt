@@ -3,11 +3,11 @@ add_executable(encrypter-shell ${encrypter_SRCS} )
 
 if (APPLE)
   target_link_libraries(encrypter-shell
-    PRIVATE nanolog encrypter-lib ${OPENSSL_LIBRARIES} readline z
+    PRIVATE nanolog encrypter-lib encrypter-api ${OPENSSL_LIBRARIES} readline z
   )
 else()
   target_link_libraries(encrypter-shell
-    PRIVATE nanolog encrypter-lib crypto ssl readline pthread z
+    PRIVATE nanolog encrypter-lib encrypter-api crypto ssl readline pthread z
   )
 endif()
 

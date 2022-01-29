@@ -40,6 +40,7 @@ if(Boost_FOUND)
 endif()
 
 if (APPLE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines-ts")
   set(CMAKE_MACOSX_RPATH 1)
 endif()
 if (UNIX)

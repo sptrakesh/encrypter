@@ -6,6 +6,7 @@
 
 #include <string>
 #include <string_view>
+#include "contextholder.h"
 
 namespace spt::encrypter::api
 {
@@ -16,8 +17,10 @@ namespace spt::encrypter::api
    *
    * @param server The hostname of the service to connect to.
    * @param port The port to connect to.
+   * @param ioc The optional IO context to use.  Defaults to the context from {@see ContextHolder::ioc}
    */
-  void init( std::string_view server, std::string_view port = { "2030" } );
+  void init( std::string_view server, std::string_view port = { "2030" },
+      boost::asio::io_context& ioc = ContextHolder::instance().ioc );
 
   /**
    * Encrypt the specified data.  If errors are encountered while encrypting

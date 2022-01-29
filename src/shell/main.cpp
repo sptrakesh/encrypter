@@ -2,6 +2,7 @@
 // Created by Rakesh on 25/12/2021.
 //
 
+#include "../api/api.h"
 #include "../lib/util/clara.h"
 #include "../lib/util/encrypter.h"
 #include "../log/NanoLog.h"
@@ -76,6 +77,24 @@ namespace spt::encrypter::shell
     std::cout << res << '\n';
   }
 
+  void encrypt( std::string_view line, std::size_t idx )
+  {
+    auto [k, end] = key( line, idx );
+    if ( end <= idx )
+    {
+      std::cout << "Cannot parse text from " << line << '\n';
+      return;
+    }
+
+    auto res = api::encrypt( k );
+    if ( res.empty() )
+    {
+      std::cout << "Cannot encrypt text " << k << '\n';
+      return;
+    }
+    std::cout << res << '\n';
+  }
+
   void decrypt( util::Encrypter& encrypter, std::string_view line, std::size_t idx )
   {
     auto [k, end] = key( line, idx );
@@ -86,6 +105,24 @@ namespace spt::encrypter::shell
     }
 
     auto res = encrypter.decrypt( k );
+    if ( res.empty() )
+    {
+      std::cout << "Cannot decrypt text " << k << '\n';
+      return;
+    }
+    std::cout << res << '\n';
+  }
+
+  void decrypt( std::string_view line, std::size_t idx )
+  {
+    auto [k, end] = key( line, idx );
+    if ( end <= idx )
+    {
+      std::cout << "Cannot parse text from " << line << '\n';
+      return;
+    }
+
+    auto res = api::decrypt( k );
     if ( res.empty() )
     {
       std::cout << "Cannot decrypt text " << k << '\n';
@@ -105,6 +142,10 @@ namespace spt::encrypter::shell
     rl_bind_key( '\t', rl_insert );
 
     auto encrypter = util::Encrypter( util::Encrypter::AES_256_CBC, key() );
+
+    std::string previous;
+    previous.reserve( 128 );
+
     char* buf;
     while ( ( buf = readline("encrypter> " ) ) != nullptr )
     {
@@ -115,7 +156,7 @@ namespace spt::encrypter::shell
         continue;
       }
 
-      add_history( buf );
+      if ( previous != std::string{ buf } ) add_history( buf );
 
       auto line = std::string_view{ buf, len };
       line = trim( line );
@@ -143,6 +184,71 @@ namespace spt::encrypter::shell
           std::cout << "Unknown command " << cmd << '\n';
         }
       }
+
+      previous.clear();
+      previous.append( buf, len );
+      std::free( buf );
+    }
+  }
+
+  void run( std::string_view server, std::string_view port )
+  {
+    api::init( server, port );
+
+    using namespace std::literals;
+    std::cout << "Using encrypter service on \033[1m" << server << ':' << port << "\033[1m\n";
+    std::cout << "Enter commands followed by <ENTER>" << '\n';
+    std::cout << "Enter \033[1mhelp\033[0m for help about commands" << '\n';
+    std::cout << "Enter \033[1mexit\033[0m or \033[1mquit\033[0m to exit shell\n";
+
+    // Disable tab completion
+    rl_bind_key( '\t', rl_insert );
+
+    std::string previous;
+    previous.reserve( 128 );
+
+    char* buf;
+    while ( ( buf = readline("encrypter> " ) ) != nullptr )
+    {
+      auto len = strlen( buf );
+      if ( len == 0 )
+      {
+        std::free( buf );
+        continue;
+      }
+
+      if ( previous != std::string{ buf } ) add_history( buf );
+
+      auto line = std::string_view{ buf, len };
+      line = trim( line );
+      if ( line == "exit"sv || line == "quit"sv )
+      {
+        std::cout << "Bye\n";
+        break;
+      }
+      else if ( line == "help"sv ) help();
+      else if ( line.empty() ) { /* noop */ }
+      else
+      {
+        auto[cmd, idx] = command( line );
+
+        if ( "enc"sv == cmd )
+        {
+          encrypt( line, idx );
+        }
+        else if ( "dec"sv == cmd )
+        {
+          decrypt( line, idx );
+        }
+        else
+        {
+          std::cout << "Unknown command " << cmd << '\n';
+        }
+      }
+
+      previous.clear();
+      previous.append( buf, len );
+      std::free( buf );
     }
   }
 }
@@ -150,6 +256,8 @@ namespace spt::encrypter::shell
 int main( int argc, char const * const * argv )
 {
   using clara::Opt;
+  std::string server;
+  std::string port{ "2030" };
 #ifdef __APPLE__
   std::string logLevel{ "debug" };
 #else
@@ -159,6 +267,8 @@ int main( int argc, char const * const * argv )
   bool help = false;
 
   auto options = clara::Help(help) |
+      Opt(server, "localhost")["-s"]["--server"]("Specify service to connect to.  If not specified uses library.") |
+      Opt(port, "2030")["-p"]["--port"]("Specify port for service to connect to (default 2030)") |
       Opt(logLevel, "info")["-l"]["--log-level"]("Log level to use [debug|info|warn|critical] (default info).") |
       Opt(dir, "/tmp/")["-o"]["--log-dir"]("Log directory (default /tmp/)");
 
@@ -181,5 +291,6 @@ int main( int argc, char const * const * argv )
   else if ( logLevel == "critical" ) nanolog::set_log_level( nanolog::LogLevel::CRIT );
   nanolog::initialize( nanolog::GuaranteedLogger(), dir, "encrypter-shell", false );
 
-  spt::encrypter::shell::run();
+  if ( server.empty() ) spt::encrypter::shell::run();
+  else spt::encrypter::shell::run( server, port );
 }

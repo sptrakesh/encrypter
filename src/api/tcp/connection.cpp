@@ -3,7 +3,6 @@
 //
 
 #include "../api.h"
-#include "../contextholder.h"
 #include "connection.h"
 #include "../../log/NanoLog.h"
 
@@ -20,15 +19,19 @@ namespace spt::encrypter::api::tcp::pconnection
   std::mutex mutex;
   std::string server;
   std::string port;
+  boost::asio::io_context* ioc{ nullptr };
 }
 
-void spt::encrypter::api::init( std::string_view server, std::string_view port )
+void spt::encrypter::api::init( std::string_view server, std::string_view port,
+    boost::asio::io_context& ioc )
 {
   if ( tcp::pconnection::server.empty() )
   {
     auto lock = std::unique_lock( tcp::pconnection::mutex );
-    tcp::pconnection::server = std::string{ server.data(), server.size() };
-    tcp::pconnection::port = std::string{ port.data(), port.size() };
+    tcp::pconnection::server.append( server.data(), server.size() );
+    tcp::pconnection::port.append( port.data(), port.size() );
+    tcp::pconnection::ioc = &ioc;
+    LOG_INFO << "Initialised client connection to " << tcp::pconnection::server << ':' << tcp::pconnection::port;
   }
   else
   {
@@ -39,7 +42,19 @@ void spt::encrypter::api::init( std::string_view server, std::string_view port )
 Connection::Connection( boost::asio::io_context& ioc, std::string_view server, std::string_view port ) :
     s{ ioc }, resolver{ ioc }
 {
-  boost::asio::connect( s, resolver.resolve( server, port ) );
+  boost::system::error_code ec;
+  auto servers = resolver.resolve( server, port, ec );
+  if ( ec )
+  {
+    LOG_CRIT << "Error resolving encrypter service " << server << ':' << port;
+    throw std::runtime_error( "Error resolving encrypter service" );
+  }
+  boost::asio::connect( s, servers, ec );
+  if ( ec )
+  {
+    LOG_CRIT << "Error connecting to encrypter service " << server << ':' << port;
+    throw std::runtime_error( "Error connecting to encrypter service" );
+  }
 }
 
 Connection::~Connection()
@@ -132,5 +147,5 @@ void Connection::socket()
 
 std::unique_ptr<Connection> spt::encrypter::api::tcp::create()
 {
-  return std::make_unique<Connection>( ContextHolder::instance().ioc, pconnection::server, pconnection::port );
+  return std::make_unique<Connection>( *pconnection::ioc, pconnection::server, pconnection::port );
 }

@@ -244,6 +244,7 @@ int spt::encrypter::service::run( int port, int threads )
     v.emplace_back( [&run] { run(); } );
   }
 
+  internal::PoolHolder::instance();
   boost::asio::co_spawn( ioc, coroutine::listener( ioc, port ), boost::asio::detached );
   LOG_INFO << "TCP service started on port " << port;
 

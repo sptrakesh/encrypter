@@ -2,6 +2,8 @@
 // Created by Rakesh on 27/10/2020.
 //
 
+#include "../api/contextholder.h"
+#include "../api/tcp/connection.h"
 #include "../lib/util/clara.h"
 #include "../lib/util/encrypter.h"
 #include "../log/NanoLog.h"
@@ -24,11 +26,15 @@ int main( int argc, char const * const * argv )
   std::string input;
   std::string logLevel{ "info" };
   std::string dir{ "/tmp/" };
+  std::string server;
+  std::string port{ "2030" };
   bool encrypt = false;
   bool decrypt = false;
   bool help = false;
 
   auto options = clara::Help( help ) |
+      Opt(server, "localhost")["-s"]["--server"]("Specify service to connect to.  If not specified uses library.") |
+      Opt(port, "2030")["-p"]["--port"]("Specify port for service to connect to (default 2030)") |
       Opt( encrypt)["-e"]["--encrypt"](
           "Encrypt input text. Either this or decrypt must be specified." ) |
       Opt( decrypt )["-d"]["--decrypt"](
@@ -37,11 +43,10 @@ int main( int argc, char const * const * argv )
       Opt(dir, "/tmp/")["-o"]["--log-dir"]("Log directory (default /tmp/)") |
       Arg( input, "input" )( "Text to encrypt or decrypt." );
 
-      auto result = options.parse( clara::Args( argc, argv ));
+  auto result = options.parse( clara::Args( argc, argv ));
   if ( !result )
   {
-    std::cerr << "Error in command line: " << result.errorMessage()
-              << std::endl;
+    std::cerr << "Error in command line: " << result.errorMessage() << std::endl;
     exit( 1 );
   }
 
@@ -69,16 +74,47 @@ int main( int argc, char const * const * argv )
   else if ( logLevel == "critical" ) nanolog::set_log_level( nanolog::LogLevel::CRIT );
   nanolog::initialize( nanolog::GuaranteedLogger(), dir, "encrypter-cli", false );
 
-  auto encrypter = Encrypter( Encrypter::AES_256_CBC, key() );
-  if (encrypt)
+  if ( server.empty() )
   {
-    const auto encrypted = encrypter.encrypt( input );
-    std::cout << encrypted << std::endl;
+    auto encrypter = Encrypter( Encrypter::AES_256_CBC, key() );
+    if ( encrypt )
+    {
+      const auto encrypted = encrypter.encrypt( input );
+      std::cout << encrypted << std::endl;
+    }
+
+    if ( decrypt )
+    {
+      const auto dec = encrypter.decrypt( input );
+      std::cout << dec << std::endl;
+    }
+
+    return 0;
   }
 
-  if (decrypt)
+  LOG_INFO << "Using service at " << server << ':' << port;
+  try
   {
-    const auto dec = encrypter.decrypt( input );
-    std::cout << dec << std::endl;
+    auto c = spt::encrypter::api::tcp::Connection{
+      spt::encrypter::api::ContextHolder::instance().ioc, server, port };
+
+    if ( encrypt )
+    {
+      const auto encrypted = c.encrypt( input );
+      std::cout << encrypted << std::endl;
+    }
+
+    if ( decrypt )
+    {
+      const auto dec = c.decrypt( input );
+      std::cout << dec << std::endl;
+    }
   }
+  catch ( const std::exception& ex )
+  {
+    LOG_WARN << "Error connecting to encrypter service. " << ex.what();
+    exit( 3 );
+  }
+
+  return 0;
 }
