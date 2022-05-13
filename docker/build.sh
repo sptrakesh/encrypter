@@ -1,7 +1,7 @@
 #!/bin/sh
 
-DIR=`dirname $0`
-. $DIR/env.sh
+cd `dirname $0`/..
+. docker/env.sh
 
 if [ "$1" = "local" ]
 then

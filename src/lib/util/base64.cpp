@@ -63,6 +63,7 @@ static unsigned int pos_of_char(const unsigned char chr) {
     throw "If input is correct, this line should never be reached.";
 }
 
+#if __GNUC__ < 12
 static std::string insert_linebreaks(std::string str, size_t distance) {
  //
  // Provided by https://github.com/JomaCorpFX, adapted by me.
@@ -95,6 +96,7 @@ template <typename String>
 static std::string encode_mime(String s) {
   return encode_with_line_breaks<String, 76>(s);
 }
+#endif // __GNUC__ < 12
 
 template <typename String>
 static std::string encode(String s, bool url) {
@@ -222,6 +224,7 @@ std::string base64_encode(std::string const& s, bool url) {
    return encode(s, url);
 }
 
+#if __GNUC__ < 12
 std::string base64_encode_pem (std::string const& s) {
    return encode_pem(s);
 }
@@ -229,6 +232,7 @@ std::string base64_encode_pem (std::string const& s) {
 std::string base64_encode_mime(std::string const& s) {
    return encode_mime(s);
 }
+#endif // __GNUC__ < 12
 
 #if __cplusplus >= 201703L
 //
@@ -241,6 +245,7 @@ std::string base64_encode(std::string_view s, bool url) {
    return encode(s, url);
 }
 
+#if __GNUC__ < 12
 std::string base64_encode_pem(std::string_view s) {
    return encode_pem(s);
 }
@@ -248,6 +253,7 @@ std::string base64_encode_pem(std::string_view s) {
 std::string base64_encode_mime(std::string_view s) {
    return encode_mime(s);
 }
+#endif // __GNUC__ < 12
 
 std::string base64_decode(std::string_view s, bool remove_linebreaks) {
   return decode(s, remove_linebreaks);

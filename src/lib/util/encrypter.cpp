@@ -30,7 +30,7 @@ std::string Encrypter::encrypt( std::string_view value )
 {
   auto const execute = [this, value]() -> std::string
   {
-    int outlen = value.size();
+    int outlen = static_cast<int>( value.size() );
     std::string str( outlen + EVP_CIPHER_CTX_block_size( encryptingContext ), '\0' );
     auto* outbuf = reinterpret_cast<unsigned char*>( str.data() );
 
@@ -81,7 +81,7 @@ std::string Encrypter::decrypt( std::string_view sec )
   auto const execute = [this]( std::string_view source ) -> std::string
   {
     auto sec = base64_decode( source );
-    int outlen = sec.size();
+    int outlen = static_cast<int>( sec.size() );
     std::string str( outlen, '\0' );
     auto* outbuf = reinterpret_cast<unsigned char *>( str.data() );
 
