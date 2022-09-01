@@ -13,7 +13,7 @@
 
 std::string key()
 {
-  char* val = std::getenv( "ENCRYPTION_KEY" );
+  char* val = std::getenv( "ENCRYPTION_KEY" ); // flawfinder: ignore
   return val == nullptr ? std::string( "rFmHPdwX5E/2gq2fSuPrgSDUi4W/+Y7/QL3NxINM+pY=" ) : std::string( val );
 }
 

@@ -173,7 +173,7 @@ namespace spt::encrypter::service::coroutine
     rbuf.insert( rbuf.end(), data + sizeof(uint32_t), data + osize );
 
     LOG_DEBUG << "Read " << int(osize) << " bytes, total size " << int(docSize);
-    while ( docSize < maxBytes && read != docSize )
+    while ( docSize < maxBytes && read != docSize ) // flawfinder: ignore
     {
       osize = co_await socket.async_read_some( boost::asio::buffer( data ), boost::asio::use_awaitable );
       rbuf.insert( rbuf.end(), data, data + osize );

@@ -92,29 +92,39 @@ std::string Connection::send( std::string_view data, std::string_view context )
 
   uint32_t n = data.size();
   std::ostream os{ &buffer };
-  os.write( reinterpret_cast<const char*>( &n ), sizeof(n) );
-  os.write( data.data(), data.size() );
+  os.write( reinterpret_cast<const char*>( &n ), sizeof( n ));
+  os.write( data.data(), data.size());
 
   const auto isize = boost::asio::write( s, buffer );
   buffer.consume( isize );
 
-  auto osize = s.read_some( buffer.prepare( data.size() ) );
+  auto osize = s.read_some( buffer.prepare( data.size()));
   buffer.commit( osize );
   std::size_t read = osize;
 
-  if ( read < 5 )
+  if ( read < 5 ) // flawfinder: ignore
   {
     LOG_WARN << "Invalid short response for " << context;
     return {};
   }
 
-  const auto d = reinterpret_cast<const uint8_t*>( buffer.data().data() );
+  const auto d = reinterpret_cast<const uint8_t*>( buffer.data().data());
   uint32_t len;
-  memcpy( &len, d, sizeof(len) );
-  LOG_DEBUG << "Read " << int(read) << " bytes, total size " << int(len);
+  memcpy( &len, d, sizeof( len ));
+  LOG_DEBUG << "Read " << int( read ) << " bytes, total size " << int( len ); // flawfinder: ignore
+
+#ifndef MAX_REQUEST_SIZE
+#define MAX_REQUEST_SIZE (256*1024)
+#endif
+
+  if ( uint32_t maxLength = std::max( len, uint32_t(MAX_REQUEST_SIZE) ); len > maxLength )
+  {
+    LOG_WARN << "Request size exceeds max defined size " << int(MAX_REQUEST_SIZE) << ".  Truncating read...";
+    len = maxLength;
+  }
 
   auto i = 0;
-  while ( read < ( len + sizeof(len) ) )
+  while ( read < ( len + sizeof(len) ) ) // flawfinder: ignore
   {
     LOG_DEBUG << "Iteration " << ++i;
     osize = s.read_some( buffer.prepare( 256 ) );
@@ -122,7 +132,7 @@ std::string Connection::send( std::string_view data, std::string_view context )
     read += osize;
   }
 
-  LOG_DEBUG << "Read " << int(read) << " bytes, total size " << int(len);
+  LOG_DEBUG << "Read " << int(read) << " bytes, total size " << int(len); // flawfinder: ignore
   auto resp = std::string{ reinterpret_cast<const char*>( buffer.data().data()  ) + sizeof(len), len };
   buffer.consume( buffer.size() );
   return resp;

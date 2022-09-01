@@ -7,6 +7,7 @@
 #include "../lib/util/encrypter.h"
 #include "../log/NanoLog.h"
 
+#include <cstring>
 #include <iostream>
 
 #include <readline/readline.h>
@@ -16,7 +17,7 @@ namespace spt::encrypter::shell
 {
   std::string key()
   {
-    char* val = std::getenv( "ENCRYPTION_KEY" );
+    char* val = std::getenv( "ENCRYPTION_KEY" ); // flawfinder: ignore
     return val == nullptr ? std::string( "rFmHPdwX5E/2gq2fSuPrgSDUi4W/+Y7/QL3NxINM+pY=" ) : std::string( val );
   }
 
@@ -149,7 +150,11 @@ namespace spt::encrypter::shell
     char* buf;
     while ( ( buf = readline("encrypter> " ) ) != nullptr )
     {
-      auto len = strlen( buf );
+#ifdef __STDC_LIB_EXT1__
+      auto len = strnlen_s( buf, 32*1024 );
+#else
+      auto len = strlen( buf ); // flawfinder: ignore
+#endif
       if ( len == 0 )
       {
         std::free( buf );
@@ -210,7 +215,11 @@ namespace spt::encrypter::shell
     char* buf;
     while ( ( buf = readline("encrypter> " ) ) != nullptr )
     {
-      auto len = strlen( buf );
+#ifdef __STDC_LIB_EXT1__
+      auto len = strnlen_s( buf, 32*1024 );
+#else
+      auto len = strlen( buf ); // flawfinder: ignore
+#endif
       if ( len == 0 )
       {
         std::free( buf );
