@@ -64,7 +64,7 @@ namespace
     auto tp = now.time_since_epoch();
     tp -= std::chrono::duration_cast<std::chrono::seconds>(tp);
     char microseconds[7]; // flawfinder: ignore
-    snprintf(microseconds, 7, "%06u", static_cast<unsigned>(tp / std::chrono::microseconds(1)));
+    snprintf(microseconds, 7, "%06u", static_cast<unsigned>(tp / std::chrono::microseconds(1))); // flawfinder: ignore
     os << '[' << buffer << microseconds << ']';
   }
 
