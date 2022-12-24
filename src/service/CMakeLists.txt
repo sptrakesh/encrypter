@@ -3,11 +3,11 @@ add_executable(encrypter-service ${encrypter_SRCS} )
 
 if (APPLE)
   target_link_libraries(encrypter-service
-    PRIVATE nanolog encrypter-lib Boost::boost ${OPENSSL_LIBRARIES} z
+    PRIVATE nanolog encrypter-lib Boost::boost ${OPENSSL_LIBRARIES} jemalloc z
   )
 else()
   target_link_libraries(encrypter-service
-    PRIVATE nanolog encrypter-lib Boost::boost crypto ssl pthread z
+    PRIVATE nanolog encrypter-lib Boost::boost crypto ssl pthread jemalloc z
   )
 endif()
 
