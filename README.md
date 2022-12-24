@@ -60,12 +60,14 @@ Bye
 Standard `cmake` build system.  Main dependency is on [boost](https://boost.org/).
 
 ```shell
-cd <path of project>
-mkdir build && cd build
+git clone https://github.com/sptrakesh/encrypter.git
+cd encrypter
 cmake -DCMAKE_PREFIX_PATH=/usr/local/boost \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_INSTALL_PREFIX=/usr/local/spt ..
-sudo make -j8 install
+  -DCMAKE_INSTALL_PREFIX=/usr/local/spt \
+  -S . -B build
+cmake --build build -j12
+(cd build; sudo make install)
 ```
 
 ## Docker
