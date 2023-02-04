@@ -13,8 +13,40 @@ endif()
 # Find includes in the build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+  execute_process(
+    COMMAND brew --prefix OpenSSL
+    RESULT_VARIABLE BREW_OPENSSL
+    OUTPUT_VARIABLE BREW_OPENSSL_PREFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if (BREW_OPENSSL EQUAL 0 AND EXISTS "${BREW_OPENSSL_PREFIX}")
+    message(STATUS "Found OpenSSL keg installed by Homebrew at ${BREW_OPENSSL_PREFIX}")
+    set(OPENSSL_ROOT_DIR "${BREW_OPENSSL_PREFIX}/")
+    set(OPENSSL_INCLUDE_DIR "${BREW_OPENSSL_PREFIX}/include")
+    set(OPENSSL_LIBRARIES "${BREW_OPENSSL_PREFIX}/lib")
+    set(OPENSSL_CRYPTO_LIBRARY "${BREW_OPENSSL_PREFIX}/lib/libcrypto.dylib")
+  endif()
+
+  execute_process(
+    COMMAND brew --prefix jemalloc
+    RESULT_VARIABLE BREW_JEMALLOC
+    OUTPUT_VARIABLE BREW_JEMALLOC_PREFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if (BREW_JEMALLOC EQUAL 0 AND EXISTS "${BREW_JEMALLOC_PREFIX}")
+    message(STATUS "Found OpenSSL keg installed by Homebrew at ${BREW_JEMALLOC_PREFIX}")
+    set(JEMALLOC_ROOT_DIR "${BREW_JEMALLOC_PREFIX}/")
+    set(JEMALLOC_LIBRARIES "${BREW_JEMALLOC_PREFIX}/lib")
+    set(JEMALLOC_LIBRARY "${BREW_JEMALLOC_PREFIX}/lib/libjemalloc.dylib")
+  endif()
+endif()
+
 find_package(OpenSSL REQUIRED)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
+if (OPENSSL_FOUND)
+  include_directories(${OPENSSL_INCLUDE_DIR})
+  set(OPENSSL_USE_STATIC_LIBS TRUE)
+endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
@@ -30,10 +62,8 @@ endif(UNIX AND NOT APPLE)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_USE_MULTITHREADED ON)
-set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 find_package(Boost)
-find_package(OpenSSL REQUIRED)
 
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
