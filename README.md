@@ -65,6 +65,7 @@ cd encrypter
 cmake -DCMAKE_PREFIX_PATH=/usr/local/boost \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX=/usr/local/spt \
+  -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl \
   -S . -B build
 cmake --build build -j12
 (cd build; sudo make install)

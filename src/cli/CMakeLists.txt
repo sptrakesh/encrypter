@@ -4,7 +4,7 @@ add_executable(encrypter ${encrypter_SRCS} )
 
 if (APPLE)
   target_link_libraries(encrypter
-    PRIVATE nanolog encrypter-lib encrypter-api /opt/local/lib/libssl.a /opt/local/lib/libcrypto.a /opt/local/lib/libz.a
+    PRIVATE nanolog encrypter-lib encrypter-api OpenSSL::SSL OpenSSL::Crypto
   )
 else()
   target_link_libraries(encrypter
