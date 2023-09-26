@@ -44,16 +44,16 @@ namespace spt::encrypter::pool
     {
       explicit ConnectionWrapper( Ptr con ) : con{ std::move( con ) } {}
 
-      ConnectionWrapper( ConnectionWrapper&& c ) = default;
-      ConnectionWrapper& operator=(ConnectionWrapper&&) = default;
+      ConnectionWrapper( ConnectionWrapper&& c ) noexcept = default;
+      ConnectionWrapper& operator=(ConnectionWrapper&&) noexcept = default;
 
       ConnectionWrapper(const ConnectionWrapper&) = delete;
       ConnectionWrapper& operator=(const ConnectionWrapper&) = delete;
 
       operator bool() const { return con.operator bool(); }
 
-      Ptr con;
-      std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
+      Ptr con{ nullptr };
+      std::chrono::time_point<std::chrono::system_clock> time{ std::chrono::system_clock::now() };
       uint32_t count{ 0 };
     };
 
@@ -64,7 +64,17 @@ namespace spt::encrypter::pool
 
       ~Proxy()
       {
-        if ( con ) pool->release( std::move( con ) );
+        if ( con )
+        {
+          try
+          {
+            pool->release( std::move( con ) );
+          }
+          catch ( const std::exception& ex )
+          {
+            LOG_CRIT << "Error releasing connection. " << ex.what();
+          }
+        }
       }
 
       Proxy( Proxy&& p ) = default;
@@ -96,11 +106,13 @@ namespace spt::encrypter::pool
     ~Pool()
     {
       stop.store( true );
-      thread.join();
+      if ( thread.joinable() ) thread.join();
     }
 
     Pool( const Pool& ) = delete;
     Pool& operator=( const Pool& ) = delete;
+    Pool( Pool&& ) = delete;
+    Pool& operator=( Pool&& ) = delete;
 
     std::optional<Proxy> acquire()
     {

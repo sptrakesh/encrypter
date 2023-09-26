@@ -92,13 +92,13 @@ std::string Connection::send( std::string_view data, std::string_view context )
 
   uint32_t n = data.size();
   std::ostream os{ &buffer };
-  os.write( reinterpret_cast<const char*>( &n ), sizeof( n ));
-  os.write( data.data(), data.size());
+  os.write( reinterpret_cast<const char*>( &n ), sizeof( n ) );
+  os.write( data.data(), data.size() );
 
   const auto isize = boost::asio::write( s, buffer );
   buffer.consume( isize );
 
-  auto osize = s.read_some( buffer.prepare( data.size()));
+  auto osize = s.read_some( buffer.prepare( data.size() ) );
   buffer.commit( osize );
   std::size_t read = osize;
 
@@ -108,9 +108,9 @@ std::string Connection::send( std::string_view data, std::string_view context )
     return {};
   }
 
-  const auto d = reinterpret_cast<const uint8_t*>( buffer.data().data());
+  const auto d = reinterpret_cast<const uint8_t*>( buffer.data().data() );
   uint32_t len;
-  memcpy( &len, d, sizeof( len ));
+  memcpy( &len, d, sizeof( len ) );
   LOG_DEBUG << "Read " << int( read ) << " bytes, total size " << int( len ); // flawfinder: ignore
 
 #ifndef MAX_REQUEST_SIZE
