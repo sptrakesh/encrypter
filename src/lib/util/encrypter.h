@@ -117,13 +117,13 @@ namespace spt::util
     std::string key;
 
     /** A flag indicating that the encryption context needs refresh. */
-    bool refreshEncryptContext = false;
+    bool refreshEncryptContext{ false };
 
     /** A flag indicating that the decryption context needs refresh. */
-    bool refreshDecryptContext = false;
+    bool refreshDecryptContext{ false };
 
-    EVP_CIPHER_CTX* encryptingContext = nullptr;
-    EVP_CIPHER_CTX* decryptingContext = nullptr;
+    EVP_CIPHER_CTX* encryptingContext{ nullptr };
+    EVP_CIPHER_CTX* decryptingContext{ nullptr };
 
     static void loadOpenSSL();
     void initContext();

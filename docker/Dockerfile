@@ -6,7 +6,7 @@ COPY src /opt/spt/encrypter/src
 WORKDIR /opt/spt/encrypter/build
 RUN apk add --no-cache readline-dev \
   && rm -rf * \
-  && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/local .. \
+  && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/local -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" .. \
   && make -j8 \
   && make install
 

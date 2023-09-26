@@ -9,8 +9,7 @@
 using spt::util::Encrypter;
 
 Encrypter::Encrypter( std::string_view encScheme, std::string_view cryptKey )
-    : scheme( encScheme ), key( cryptKey ),
-    refreshEncryptContext( false ), refreshDecryptContext( false )
+    : scheme( encScheme ), key( cryptKey )
 {
   auto start = std::chrono::high_resolution_clock::now();
   loadOpenSSL();
@@ -30,7 +29,7 @@ std::string Encrypter::encrypt( std::string_view value )
 {
   auto const execute = [this, value]() -> std::string
   {
-    int outlen = static_cast<int>( value.size() );
+    auto outlen = static_cast<int>( value.size() );
     std::string str( outlen + EVP_CIPHER_CTX_block_size( encryptingContext ), '\0' );
     auto* outbuf = reinterpret_cast<unsigned char*>( str.data() );
 
@@ -81,7 +80,7 @@ std::string Encrypter::decrypt( std::string_view sec )
   auto const execute = [this]( std::string_view source ) -> std::string
   {
     auto sec = base64_decode( source );
-    int outlen = static_cast<int>( sec.size() );
+    auto outlen = static_cast<int>( sec.size() );
     std::string str( outlen, '\0' );
     auto* outbuf = reinterpret_cast<unsigned char *>( str.data() );
 
@@ -118,8 +117,8 @@ std::string Encrypter::decrypt( std::string_view sec )
   auto result = execute( sec );
   auto finish = std::chrono::high_resolution_clock::now();
   LOG_DEBUG << "Decryption of value of length " << int( sec.size() ) <<
-            " took " << std::chrono::duration_cast<std::chrono::nanoseconds>( finish - start ).count() <<
-            " nanoseconds";
+    " took " << std::chrono::duration_cast<std::chrono::nanoseconds>( finish - start ).count() <<
+    " nanoseconds";
   return result;
 }
 

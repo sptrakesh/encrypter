@@ -250,7 +250,7 @@ namespace nanolog
     else
     {
       m_buffer_size = std::max(static_cast<size_t>(2 * m_buffer_size), required_size);
-      std::unique_ptr < char [] > new_heap_buffer(new char[m_buffer_size]);
+      auto new_heap_buffer = std::make_unique<char[]>(m_buffer_size);
       memcpy(new_heap_buffer.get(), m_heap_buffer.get(), m_bytes_used); // flawfinder: ignore
       m_heap_buffer.swap(new_heap_buffer);
     }
