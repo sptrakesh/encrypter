@@ -350,6 +350,15 @@ namespace nanolog
     return *this;
   }
 
+#ifdef WITH_BSON_SUPPORT
+  NanoLogLine& NanoLogLine::operator<<(bsoncxx::oid arg)
+  {
+    const auto str = arg.to_string();
+    encode_c_string(str.c_str(), str.length());
+    return *this;
+  }
+#endif
+
   struct BufferBase
   {
     virtual ~BufferBase() = default;

@@ -1,6 +1,17 @@
 # Encrypter
+
+* [Service](#service)
+* [Utilities](#utilities)
+  * [CLI](#cli)
+  * [Shell](#shell)
+* [Build](#build)
+  * [API Usage](#api-usage)
+* [Docker](#docker)
+  * [CLI](#running-cli)
+  * [Service](#running-service)
+
 Simple applications for encrypting or decrypting values using AES-256-CBC.
-Utility applications and a TCP/IP service is available.
+Utility applications and a TCP/IP service are available.
 
 ## Service
 A simple TCP service for providing encrypt/decrypt services to client applications.
@@ -68,7 +79,21 @@ cmake -DCMAKE_PREFIX_PATH=/usr/local/boost \
   -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl \
   -S . -B build
 cmake --build build -j12
-(cd build; sudo make install)
+sudo cmake --install build
+```
+
+### API Usage
+The [API](src/api/api.h) can be used to communicate with the encrypter TCP service.  Client code bases
+can use cmake to use the library.
+
+```shell
+# In your CMakeLists.txt file
+find_package(Encrypter REQUIRED COMPONENTS api)
+target_link_libraries(${Target_Name} PRIVATE encrypter::api ...)
+
+# Run cmake
+cmake -DCMAKE_PREFIX_PATH=/usr/local/boost -DCMAKE_PREFIX_PATH=/usr/local/spt -S . -B build
+cmake --build build -j12
 ```
 
 ## Docker

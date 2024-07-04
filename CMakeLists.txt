@@ -1,9 +1,14 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-project(encrypter)
+file(STRINGS "docker/env.sh" ver REGEX "VERSION=([0-9]*)")
+string(REGEX REPLACE "VERSION='" "" project_version ${ver})
+string(REGEX REPLACE "'" "" project_version ${project_version})
+message("Project version: ${project_version}")
 
-# Enable C++20 features
-set(CMAKE_CXX_STANDARD 20)
+project(encrypter LANGUAGES CXX VERSION ${project_version})
+
+# Enable C++23 features
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -73,7 +78,7 @@ if (APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines-ts")
   set(CMAKE_MACOSX_RPATH 1)
 endif()
-if (UNIX)
+if (UNIX AND NOT APPLE)
   include_directories(
     /opt/local/include
   )
@@ -98,4 +103,12 @@ if (BUILD_TESTING)
   add_subdirectory(test/unit)
   add_subdirectory(test/integration)
 endif()
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+    "ConfigdbConfigVersion.cmake"
+    VERSION ${configdb_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+install(FILES "EncrypterConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/ConfigdbConfigVersion.cmake" DESTINATION lib/cmake/Encrypter)
 
