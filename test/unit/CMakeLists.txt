@@ -12,8 +12,6 @@ FILE(GLOB_RECURSE unittest_SRCS *.cpp *.hpp *.h)
 set(unittest_SRCS ${unittest_SRCS})
 add_executable(unittest ${unittest_SRCS})
 
-target_link_libraries(unittest
-  PRIVATE nanolog encrypter-lib Catch2::Catch2 ${OPENSSL_LIBRARIES} z
-)
+target_link_libraries(unittest PRIVATE lib Catch2::Catch2 ${OPENSSL_LIBRARIES} z)
 
 add_test(NAME unittest COMMAND unittest)

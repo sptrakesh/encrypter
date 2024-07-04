@@ -26,8 +26,7 @@ class Client:
     async def __aexit__(self, exc_type, exc_value, traceback):
         await self.close()
 
-    async def __execute(self, data: str) -> str:
-        buf = data.encode("utf-8")
+    async def __execute(self, buf: bytes) -> bytes:
         lv = len(buf).to_bytes(length=4, byteorder=byteorder)
         ba = b''.join([lv, buf])
         _log.info(f"Writing {len(ba)} bytes to server.")
@@ -40,18 +39,29 @@ class Client:
         l = int.from_bytes(bytes=lv, byteorder=byteorder)
         _log.info(f"Response size: {l}")
 
-        b = await self.__reader.readexactly(l)
-        return b.decode("utf-8")
+        return await self.__reader.readexactly(l)
 
     async def encrypt(self, data: str) -> str:
         assert len(data) > 0
         _log.info("Encrypting data")
-        return await self.__execute(f"e {data}")
+        b = await self.__execute(f"e {data}".encode("utf-8"))
+        return b.decode("utf-8")
+
+    async def encrypt_bytes(self, data: bytes) -> bytes:
+        assert len(data) > 0
+        _log.info("Encrypting bytes")
+        return await self.__execute(b''.join(["e ".encode("utf-8"), data]))
 
     async def decrypt(self, data: str) -> str:
         assert len(data) > 0
         _log.info("Decrypting data")
-        return await self.__execute(f"d {data}")
+        b = await self.__execute(f"d {data}".encode("utf-8"))
+        return b.decode("utf-8")
+
+    async def decrypt_bytes(self, data: bytes) -> bytes:
+        assert len(data) > 0
+        _log.info("Decrypting bytes")
+        return await self.__execute(b''.join(["d ".encode("utf-8"), data]))
 
     async def close(self):
         self.__writer.close()

@@ -1,0 +1,7 @@
+include(CMakeFindDependencyMacro)
+find_dependency(Boost 1.80)
+find_dependency(Threads)
+find_dependency(ZLIB)
+find_dependency(NanoLog)
+include(${CMAKE_CURRENT_LIST_DIR}/EncrypterLibTargets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/EncrypterApiTargets.cmake)

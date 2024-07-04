@@ -1,14 +1,25 @@
 file(GLOB_RECURSE encrypter_SRCS *.cpp *.h)
 add_executable(encrypter-service ${encrypter_SRCS} )
+target_compile_definitions(encrypter-service PRIVATE _FORTIFY_SOURCE=2)
 
 if (APPLE)
-  target_link_libraries(encrypter-service
-    PRIVATE nanolog encrypter-lib Boost::boost OpenSSL::SSL OpenSSL::Crypto ${JEMALLOC_LIBRARY} z
-  )
+  target_link_libraries(encrypter-service PRIVATE lib Boost::boost z)
 else()
-  target_link_libraries(encrypter-service
-    PRIVATE nanolog encrypter-lib Boost::boost crypto ssl pthread jemalloc z
-  )
+  target_link_libraries(encrypter-service PRIVATE lib Boost::boost pthread jemalloc z)
 endif()
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  message(STATUS "Debug build, not enabling IPO/LTO")
+else()
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT result OUTPUT output LANGUAGES CXX)
+  if (result)
+    message(STATUS "IPO is supported: ${output}")
+    set_property(TARGET ${Target_Name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
+  else()
+    message(STATUS "IPO is not supported: ${output}")
+  endif()
+endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
 install(TARGETS encrypter-service DESTINATION bin)

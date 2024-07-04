@@ -6,3 +6,5 @@ Feature: TCP Service
     Given The encrypter service running on localhost on port 2030
     Then Encrypt a string
     And Decrypt the encrypted string
+    And Encrypt some bytes
+    And Decrypt the encrypted string back to bytes
