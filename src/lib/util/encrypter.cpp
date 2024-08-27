@@ -1,6 +1,6 @@
-#include "encrypter.h"
-#include "base64.h"
-#include "../log/NanoLog.h"
+#include "encrypter.hpp"
+#include "base64.hpp"
+#include "../log/NanoLog.hpp"
 
 #include <chrono>
 

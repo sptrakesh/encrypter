@@ -2,11 +2,11 @@
 // Created by Rakesh on 27/10/2020.
 //
 
-#include "../api/contextholder.h"
-#include "../api/tcp/connection.h"
-#include "../lib/util/clara.h"
-#include "../lib/util/encrypter.h"
-#include "../log/NanoLog.h"
+#include "../api/contextholder.hpp"
+#include "../api/tcp/connection.hpp"
+#include "../lib/util/clara.hpp"
+#include "../lib/util/encrypter.hpp"
+#include "../log/NanoLog.hpp"
 
 #include <cstdlib>
 #include <iostream>

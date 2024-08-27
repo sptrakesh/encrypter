@@ -2,9 +2,9 @@
 // Created by Rakesh on 15/01/2022.
 //
 
-#include "../api.h"
-#include "connection.h"
-#include "../../log/NanoLog.h"
+#include "../api.hpp"
+#include "connection.hpp"
+#include "../../log/NanoLog.hpp"
 
 #include <mutex>
 #include <boost/asio/connect.hpp>
