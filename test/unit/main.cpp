@@ -5,7 +5,7 @@
 #define CATCH_CONFIG_RUNNER
 #include <catch2/catch.hpp>
 
-#include "../../src/log/NanoLog.h"
+#include "../../src/log/NanoLog.hpp"
 
 int main( int argc, char* argv[] )
 {

@@ -3,7 +3,7 @@
 //
 
 #include <catch2/catch.hpp>
-#include "../../src/lib/util/encrypter.h"
+#include "../../src/lib/util/encrypter.hpp"
 
 namespace test::rc2
 {

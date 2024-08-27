@@ -4,8 +4,8 @@
 
 #include <catch2/catch.hpp>
 
-#include "../../src/log/NanoLog.h"
-#include "../../src/api/api.h"
+#include "../../src/log/NanoLog.hpp"
+#include "../../src/api/api.hpp"
 
 namespace spt::encrypter::itest::connection
 {

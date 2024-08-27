@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
+# For INTERPROCEDURAL_OPTIMIZATION
+if (POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
+
+if (POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 file(STRINGS "docker/env.sh" ver REGEX "VERSION=([0-9]*)")
 string(REGEX REPLACE "VERSION='" "" project_version ${ver})
 string(REGEX REPLACE "'" "" project_version ${project_version})
@@ -106,9 +115,9 @@ endif()
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "ConfigdbConfigVersion.cmake"
-    VERSION ${configdb_VERSION}
-    COMPATIBILITY AnyNewerVersion)
+  "ConfigdbConfigVersion.cmake"
+  VERSION ${configdb_VERSION}
+  COMPATIBILITY AnyNewerVersion)
 
 install(FILES "EncrypterConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/ConfigdbConfigVersion.cmake" DESTINATION lib/cmake/Encrypter)
 

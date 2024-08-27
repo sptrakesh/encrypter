@@ -25,7 +25,7 @@ install (
   DESTINATION include/encrypter
   FILES_MATCHING PATTERN "*.h*")
 install(EXPORT EncrypterLibTargets
-    FILE EncrypterLibTargets.cmake
-    NAMESPACE encrypter::
-    DESTINATION lib/cmake/Encrypter
+  FILE EncrypterLibTargets.cmake
+  NAMESPACE encrypter::
+  DESTINATION lib/cmake/Encrypter
 )

@@ -31,7 +31,7 @@
 
 */
 
-#include "base64.h"
+#include "base64.hpp"
 
  //
  // Depending on the url parameter in base64_chars, one of

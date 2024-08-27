@@ -2,10 +2,10 @@
 // Created by Rakesh on 25/12/2021.
 //
 
-#include "../api/api.h"
-#include "../lib/util/clara.h"
-#include "../lib/util/encrypter.h"
-#include "../log/NanoLog.h"
+#include "../api/api.hpp"
+#include "../lib/util/clara.hpp"
+#include "../lib/util/encrypter.hpp"
+#include "../log/NanoLog.hpp"
 
 #include <cstring>
 #include <iostream>

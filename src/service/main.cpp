@@ -5,9 +5,9 @@
 #include <iostream>
 #include <thread>
 
-#include "service.h"
-#include "../lib/util/clara.h"
-#include "../log/NanoLog.h"
+#include "service.hpp"
+#include "../lib/util/clara.hpp"
+#include "../log/NanoLog.hpp"
 
 int main( int argc, char const * const * argv )
 {
