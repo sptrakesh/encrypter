@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.25...4.0 FATAL_ERROR)
 
 # For INTERPROCEDURAL_OPTIMIZATION
 if (POLICY CMP0069)
@@ -69,10 +69,6 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 endif()
 
-if (UNIX AND NOT APPLE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines")
-endif(UNIX AND NOT APPLE)
-
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -84,7 +80,6 @@ if(Boost_FOUND)
 endif()
 
 if (APPLE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcoroutines-ts")
   set(CMAKE_MACOSX_RPATH 1)
 endif()
 if (UNIX AND NOT APPLE)

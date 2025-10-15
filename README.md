@@ -83,7 +83,7 @@ sudo cmake --install build
 ```
 
 ### API Usage
-The [API](src/api/api.h) can be used to communicate with the encrypter TCP service.  Client code bases
+The [API](src/api/api.hpp) can be used to communicate with the encrypter TCP service.  Client code bases
 can use cmake to use the library.
 
 ```shell
