@@ -1,15 +1,16 @@
 FROM sptrakesh/boost as base
 
+RUN apk add --no-cache readline-dev
+
 COPY CMakeLists.txt /opt/spt/encrypter/
 COPY EncrypterConfig.cmake /opt/spt/encrypter/
 COPY src /opt/spt/encrypter/src
 COPY docker/env.sh /opt/spt/encrypter/docker/
 
-WORKDIR /opt/spt/encrypter/build
-RUN apk add --no-cache readline-dev \
-  && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/local -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" .. \
-  && make -j8 \
-  && make install
+WORKDIR /opt/spt/encrypter
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/local -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" -B build -S . \
+  && cmake --build build -j8 \
+  && cmake --install build
 
 FROM sptrakesh/cppruntime
 
