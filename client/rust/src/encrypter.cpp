@@ -8,16 +8,23 @@
 #include <encrypter/api/api.hpp>
 #include <log/NanoLog.hpp>
 
-void init( const Configuration& conf )
+void init_logger( Logger conf )
 {
-  switch ( conf.log_level )
+  switch ( conf.level )
   {
-    case LogLevel::DEBUG: nanolog::set_log_level( nanolog::LogLevel::DEBUG ); break;
-    case LogLevel::INFO: nanolog::set_log_level( nanolog::LogLevel::INFO ); break;
-    case LogLevel::WARN: nanolog::set_log_level( nanolog::LogLevel::WARN ); break;
-    case LogLevel::CRIT: nanolog::set_log_level( nanolog::LogLevel::CRIT ); break;
+  case LogLevel::DEBUG: nanolog::set_log_level( nanolog::LogLevel::DEBUG ); break;
+  case LogLevel::INFO: nanolog::set_log_level( nanolog::LogLevel::INFO ); break;
+  case LogLevel::WARN: nanolog::set_log_level( nanolog::LogLevel::WARN ); break;
+  case LogLevel::CRIT: nanolog::set_log_level( nanolog::LogLevel::CRIT ); break;
   }
-  nanolog::initialize( nanolog::GuaranteedLogger(), "/tmp/", "encrypter-rust", conf.log_to_console );
+
+  auto dir = std::string( conf.path.data(), conf.path.size() );
+  auto name = std::string( conf.name.data(), conf.name.size() );
+  nanolog::initialize( nanolog::GuaranteedLogger(), dir, name, conf.console );
+}
+
+void init( Configuration conf )
+{
   auto sh = std::string_view{ conf.host.begin(), conf.host.end() };
   auto sp = std::to_string( conf.port );
   spt::encrypter::api::init( sh, sp );
