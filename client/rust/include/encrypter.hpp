@@ -7,6 +7,7 @@
 #include "rust/cxx.h"
 #include "encrypter/src/lib.rs.h"
 
-void init( const Configuration& conf );
+void init_logger( Logger conf );
+void init( Configuration conf );
 rust::String encrypt( rust::Str data );
 rust::String decrypt( rust::Str data );
